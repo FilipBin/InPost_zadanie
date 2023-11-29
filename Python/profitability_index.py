@@ -1,31 +1,25 @@
+# Properties
+# ==========
+# OBJECT NAME: profitability_index
+# DESCRIPTION: this file is to calculate profitability index
+
+# Revision history
+# ==========================================================================================
+# ChangeDate    Author  Version     Narrative
+# 2023-11-29    FB      branch1     Created
+# 2023-11-29    FB      branch1     Code formatting and removing drop tables statements
+# ==========    ======  =======     ========================================================
+
 import sqlite3
 import pandas as pd
 import support
+import save_dataframe_to_csv
 
-# Connect to the SQLite database
-conn = sqlite3.connect(support.path_database)  # Replace your_database_name.db' with the actual name of your SQLite database file
 
-# Define your SQL query to join the tables
-query = '''
-    SELECT p.model, p.type, l.speed, l.ram, l.hd, l.price 
-    FROM laptop l
-    JOIN product p ON l.model = p.model
-    WHERE p.type = 'laptop'
-    UNION
-    SELECT p.model, p.type, pc.speed, pc.ram, pc.hd, pc.price
-    FROM pc
-    JOIN product p ON pc.model = p.model
-    WHERE p.type = 'pc';
-'''
-
-# Use pandas to read the query result into a DataFrame
-df = pd.read_sql_query(query, conn)
-
-# Calculate the profitability index
-df['profitability_index'] = ((df['ram'] + df['hd']) / df['price']) * df['speed']
-
-# Print the resulting DataFrame
-print(df[['model', 'type', 'profitability_index']])
-
-# Close the database connection
-conn.close()
+def calculate_profitability_index():
+    connection = sqlite3.connect(support.path_database)
+    df = pd.read_sql_query(support.query_to_calculate_profitability_index, connection)
+    df['profitability_index'] = ((df['ram'] + df['hd']) / df['price']) * df['speed']
+    final_df = df[['model', 'type', 'profitability_index']]
+    save_dataframe_to_csv.save_df_to_csv(final_df, "profitability_index.csv")
+    connection.close()

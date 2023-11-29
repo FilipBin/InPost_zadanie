@@ -1,24 +1,23 @@
 # Properties
 # ==========
-# OBJECT NAME: import_data
-# DESCRIPTION: this file is to import data from csv files into tables
+# OBJECT NAME: truncate_tables
+# DESCRIPTION: this file is to truncate tables
 
 # Revision history
 # ==========================================================================================
 # ChangeDate    Author  Version     Narrative
 # 2023-11-29    FB      branch1     Created
-# 2023-11-29    FB      branch1     Code formatting and removing drop tables statements
 # ==========    ======  =======     ========================================================
 
 import support
-import pandas as pd
 import sqlite3
 
 
-def load_data():
+def truncate_tables():
     connection = sqlite3.connect(support.path_database)
     for table in support.tables_names:
-        df = pd.read_csv(support.path_to_tables + table + ".csv", delimiter=";")
-        df.to_sql(name=table, con=connection, if_exists="append", index=False)
+        sql = f'delete from {table}'
+        connection.execute(sql)
+
     connection.commit()
     connection.close()
