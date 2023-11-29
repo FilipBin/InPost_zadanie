@@ -1,16 +1,18 @@
-import sqlite3
-import support
+# Properties
+# ==========
+# OBJECT NAME: main
+# DESCRIPTION: initializing file
 
-connection = sqlite3.connect('C:\\Users\\filip\\OneDrive\\Pulpit\\inpost zadanie\\DB_computers.db')
+# Revision history
+# ==========================================================================================
+# ChangeDate    Author  Version     Narrative
+# 2023-11-29    FB      branch1     Created
+# 2023-11-29    FB      branch1     Code formatting and removing drop tables statements
+# ==========    ======  =======     ========================================================
 
-cursor = connection.cursor()
+import initialization
+def main():
+    initialization.start()
 
-command1 = """SELECT * FROM laptop"""
-
-cursor.execute(command1)
-
-results = cursor.fetchall()
-print(results)
-
-
-
+if __name__ == "__main__":
+    main()
