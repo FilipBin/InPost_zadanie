@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from sqlalchemy.orm import Session
 
-from orm_models import Laptop, PC, Printer, Product
+from Python.orm_models import Laptop, PC, Printer, Product
 
 
 class DataLoader:
@@ -12,6 +12,7 @@ class DataLoader:
     def load_data(self):
         """
         Set the path to database containing CSV files
+        :param:self
         :return:
         """
         base_path = os.path.abspath('../Database/tables/')
