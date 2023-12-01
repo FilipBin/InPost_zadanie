@@ -16,6 +16,13 @@ import os
 
 
 def save_df_to_csv(dataframe, filename):
+    """
+    create the output path by joining the csv directory and filename and save DataFrame to a csv file,
+    print an error if the file creation fails
+    :param dataframe:
+    :param filename:
+    :return:
+    """
     df = pd.DataFrame(dataframe)
     output_path = os.path.join(support.path_to_csv, filename)
 

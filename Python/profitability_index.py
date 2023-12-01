@@ -10,16 +10,36 @@
 # 2023-11-29    FB      branch1     Code formatting and removing drop tables statements
 # ==========    ======  =======     ========================================================
 
-import sqlite3
+from sqlalchemy import create_engine, text
 import pandas as pd
-import support
-import save_dataframe_to_csv
+from orm_models import Product, Laptop, PC, Printer
+from support import path_database
+from save_dataframe_to_csv import save_df_to_csv
 
 
-def calculate_profitability_index():
-    connection = sqlite3.connect(support.path_database)
-    df = pd.read_sql_query(support.query_to_calculate_profitability_index, connection)
-    df['profitability_index'] = ((df['ram'] + df['hd']) / df['price']) * df['speed']
-    final_df = df[['model', 'type', 'profitability_index']]
-    save_dataframe_to_csv.save_df_to_csv(final_df, "profitability_index.csv")
-    connection.close()
+class ProfitabilityIndexCalculator:
+
+    def __init__(self):
+        # Create the engine
+        self.engine = create_engine(path_database, echo=True)
+
+
+    def calculate_profitability_index(self):
+        """
+        calculate the profitability index
+        :return:
+        """
+        with self.engine.connect() as connection:
+            # Use SQLAlchemy text to execute the query
+            query = '''
+                SELECT p.model, p.type, ((l.ram + l.hd) / l.price) * l.speed AS profitability_index
+                FROM product p
+                JOIN laptop l 
+                ON p.model = l.model
+            '''
+
+            # Execute the query and fetch results into a DataFrame
+            df = pd.read_sql_query(query, connection)
+
+            # Save the DataFrame to a CSV file
+            save_df_to_csv(df, "profitability_index_v2.csv")

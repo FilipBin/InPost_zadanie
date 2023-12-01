@@ -14,7 +14,7 @@ tables_names = ['laptop', 'pc', 'printer', 'product']
 
 path_to_tables = '../Database/tables/'
 
-path_database = '../Database/DB_computers.db'
+path_database = "sqlite:///../Database/DB_computers_v2.db"
 
 path_to_csv = '../'
 

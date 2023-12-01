@@ -11,8 +11,14 @@
 # ==========    ======  =======     ========================================================
 
 import initialization
+import create_db
+
+
 def main():
+
+    # create_db.CreateDb()
     initialization.start()
+
 
 if __name__ == "__main__":
     main()

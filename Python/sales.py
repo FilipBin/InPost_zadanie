@@ -9,31 +9,51 @@
 # 2023-11-29    FB      branch1     Created
 # 2023-11-29    FB      branch1     Code formatting and removing drop tables statements
 # ==========    ======  =======     ========================================================
-
-import sqlite3
+from sqlalchemy import create_engine, text
 import pandas as pd
-import support
-import save_dataframe_to_csv
+from support import path_database
+from save_dataframe_to_csv import save_df_to_csv
 
 
-def create_sales():
-    conn = sqlite3.connect(support.path_database)
-    df = pd.read_sql_query(support.query_to_create_sale, conn)
-    df['price'] = pd.to_numeric(df['price'], errors='coerce')
+class SalesCreator:
 
-    random_pc = df[df['type'] == 'pc'].sample(n=1)
-    random_printer = df[df['type'] == 'printer'].sample(n=1)
-    random_printer_2 = df[df['type'] == 'printer'].sample(n=1)
-    random_laptop = df[df['type'] == 'laptop'].sample(n=1)
+    def __init__(self):
+        # Create the engine
+        self.engine = create_engine(path_database, echo=True)
 
-    new_df = pd.DataFrame({
-        'model': [random_pc['model'].values[0] + '_' + random_printer['model'].values[0],
-                  random_laptop['model'].values[0] + '_' + random_printer_2['model'].values[0]],
-        'price': [random_pc['price'].values[0] + random_printer['price'].values[0],
-                  random_laptop['price'].values[0] + random_printer_2['price'].values[0]],
-        'type': ['pc_printer', 'laptop_printer']
-    })
-    new_df['price'] = new_df['price'] * 0.9
-    save_dataframe_to_csv.save_df_to_csv(new_df, "sale_offer.csv")
+    def create_sales(self):
+        """
+        Create a sales offer from random pc & printer and random laptop & printer
+        :return:
+        """
+        with self.engine.connect() as connection:
+            # Use SQLAlchemy text to execute the query
+            query = text('''
+                SELECT model, price, type FROM your_table;  -- Replace 'your_table' with the actual table name
+            ''')
 
-    conn.close()
+            # Execute the query and fetch results into a DataFrame
+            df = pd.read_sql_query(query, connection)
+
+            # Clean and process the DataFrame
+            df['price'] = pd.to_numeric(df['price'], errors='coerce')
+
+            random_pc = df[df['type'] == 'pc'].sample(n=1)
+            random_printer = df[df['type'] == 'printer'].sample(n=1)
+            random_printer_2 = df[df['type'] == 'printer'].sample(n=1)
+            random_laptop = df[df['type'] == 'laptop'].sample(n=1)
+
+            new_df = pd.DataFrame({
+                'model': [random_pc['model'].values[0] + '_' + random_printer['model'].values[0],
+                          random_laptop['model'].values[0] + '_' + random_printer_2['model'].values[0]],
+                'price': [random_pc['price'].values[0] + random_printer['price'].values[0],
+                          random_laptop['price'].values[0] + random_printer_2['price'].values[0]],
+                'type': ['pc_printer', 'laptop_printer']
+            })
+
+            # Adjust prices
+            new_df['price'] = new_df['price'] * 0.9
+
+            # Save the DataFrame to a CSV file
+            save_df_to_csv(new_df, "sale_offer_v2.csv")
+

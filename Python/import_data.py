@@ -16,6 +16,10 @@ import sqlite3
 
 
 def load_data():
+    """
+    Create loop to each tables and read data from csv files
+    :return:
+    """
     connection = sqlite3.connect(support.path_database)
     for table in support.tables_names:
         df = pd.read_csv(support.path_to_tables + table + ".csv", delimiter=";")
