@@ -27,7 +27,12 @@ class ProfitabilityIndexCalculator:
         :param:self
         :return:csv file
         """
-        with self.engine.connect() as connection:
+        with (self.engine.connect() as connection):
             query = support.query_to_calculate_profitability_index
             df_profitability_index = pd.read_sql_query(query, connection)
-            save_df_to_csv(df_profitability_index, "profitability_index_v2.csv")
+            df_profitability_index['profitability_index'] = ((
+                (df_profitability_index['ram'] + df_profitability_index['hd']) /
+                df_profitability_index['price']
+            ) * df_profitability_index['speed']).round(2)
+            df_profitability_index_final = pd.DataFrame(df_profitability_index[['model', 'type', 'profitability_index']])
+            save_df_to_csv(df_profitability_index_final, "profitability_index_v2.csv")
